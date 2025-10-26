@@ -14,7 +14,7 @@
 
 
 ;; TRAITS
-(use-trait tournament-game-trait .tournament-game-trait.tournament-game-trait)
+(use-trait game-tournament-trait .game-tournament-trait.game-tournament-trait)
 
 
 ;; CONSTANTS
@@ -149,7 +149,7 @@
 )
 
 ;; Start the tournament: only creator, only when full. Creates round 1 matches automatically.
-(define-public (start-tournament (tid uint) (game-contract <tournament-game-trait>))
+(define-public (start-tournament (tid uint) (game-contract <game-tournament-trait>))
   ;; fetch tournament metdata
   (let (
     (meta (try! (get-tournament-or-err tid)))
@@ -190,7 +190,7 @@
   )
 
     ;; assert caller is tic-tac-toe contract and verify match details
-    (asserts! (is-eq contract-caller .tic-tac-toe) (err ERR_UNAUTHORIZED))
+    (asserts! (is-eq contract-caller .tic-tac-toe-v2) (err ERR_UNAUTHORIZED))
     (asserts! (is-eq (get status meta) STATUS_IN_PROGRESS) (err ERR_NOT_IN_PROGRESS))
     (asserts! (is-eq (get completed match-data) false) (err ERR_MATCH_ALREADY_COMPLETED))
 
@@ -248,7 +248,7 @@
 ;; PRIVATE HELPER FUNCTIONS
 
 ;; Create round 1 matches by pairing adjacent players and creating tic-tac-toe games
-(define-private (create-round-one-matches (tid uint) (player-count uint) (game-contract <tournament-game-trait>))
+(define-private (create-round-one-matches (tid uint) (player-count uint) (game-contract <game-tournament-trait>))
   (begin
     ;; For a 4-player tournament: create 2 matches (1v2, 3v4)
     ;; For an 8-player tournament: create 4 matches (1v2, 3v4, 5v6, 7v8), etc.
@@ -273,7 +273,7 @@
 )
 
 ;; Create a single match: look up players by position, create game, store match
-(define-private (create-match (tid uint) (round uint) (match-num uint) (p1-pos uint) (p2-pos uint) (game-contract <tournament-game-trait>))
+(define-private (create-match (tid uint) (round uint) (match-num uint) (p1-pos uint) (p2-pos uint) (game-contract <game-tournament-trait>))
   ;; fetch player details and game id
   (let (
     (p1 (unwrap! (get-player-at tid p1-pos) (err ERR_INVALID_PARAMS)))

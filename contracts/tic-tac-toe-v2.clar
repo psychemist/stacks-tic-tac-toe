@@ -5,8 +5,8 @@
 (define-constant ERR_GAME_CANNOT_BE_JOINED u103) ;; Error thrown when a game cannot be joined, usually because it already has two players
 (define-constant ERR_NOT_YOUR_TURN u104) ;; Error thrown when a player tries to make a move when it is not their turn
 
-;; Implement the tournament-game-trait
-(impl-trait .tournament-game-trait.tournament-game-trait)
+;; Implement the game-tournament-trait
+(impl-trait .game-tournament-trait.game-tournament-trait)
 
 ;; The Game ID to use for the next game
 (define-data-var latest-game-id uint u0)
