@@ -20,6 +20,9 @@ export function Navbar() {
         <Link href="/create" className="text-gray-300 hover:text-gray-50">
           Create Game
         </Link>
+        <Link href="/tournaments" className="text-gray-300 hover:text-gray-50">
+          Tournaments
+        </Link>
       </div>
 
       <div className="flex items-center gap-2">

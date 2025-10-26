@@ -5,16 +5,32 @@ import { GameBoard } from "./game-board";
 import { abbreviateAddress, explorerAddress, formatStx } from "@/lib/stx-utils";
 import Link from "next/link";
 import { useStacks } from "@/hooks/use-stacks";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTournaments } from "@/hooks/use-tournaments";
 
 interface PlayGameProps {
   game: Game;
+  tournamentId?: number;
+  round?: number;
+  matchNumber?: number;
 }
 
-export function PlayGame({ game }: PlayGameProps) {
+export function PlayGame({ game, tournamentId, round, matchNumber }: PlayGameProps) {
   const { userData, handleJoinGame, handlePlayGame } = useStacks();
+  const { fetchTournament } = useTournaments(userData?.profile.stxAddress.testnet);
   const [board, setBoard] = useState(game.board);
   const [playedMoveIndex, setPlayedMoveIndex] = useState(-1);
+  const [tournamentName, setTournamentName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (tournamentId) {
+      fetchTournament(tournamentId).then((t) => {
+        if (t) setTournamentName(t.name);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tournamentId]);
+
   if (!userData) return null;
 
   const isPlayerOne =
@@ -39,6 +55,27 @@ export function PlayGame({ game }: PlayGameProps) {
 
   return (
     <div className="flex flex-col gap-4 w-[400px]">
+      {/* Tournament Banner */}
+      {tournamentId && (
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-lg shadow-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs uppercase tracking-wide opacity-90">Tournament Match</div>
+              <div className="text-lg font-bold">{tournamentName || `Tournament #${tournamentId}`}</div>
+              {round && matchNumber && (
+                <div className="text-sm opacity-90">Round {round} • Match {matchNumber}</div>
+              )}
+            </div>
+            <Link
+              href={`/tournaments/${tournamentId}`}
+              className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded text-sm transition"
+            >
+              View Bracket →
+            </Link>
+          </div>
+        </div>
+      )}
+
       <GameBoard
         board={board}
         onCellClick={onCellClick}
