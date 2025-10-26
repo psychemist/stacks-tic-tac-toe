@@ -50,8 +50,18 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
+            contract-name: tournament-game-trait
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/tournament-game-trait.clar
+            clarity-version: 3
+        - emulated-contract-publish:
             contract-name: tic-tac-toe
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/tic-tac-toe.clar
+            clarity-version: 3
+        - emulated-contract-publish:
+            contract-name: tournament
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/tournament.clar
             clarity-version: 3
       epoch: "3.0"

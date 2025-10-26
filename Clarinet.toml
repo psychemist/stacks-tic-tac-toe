@@ -5,10 +5,22 @@ authors = []
 telemetry = false
 cache_dir = './.cache'
 requirements = []
-[contracts.tic-tac-toe]
-path = 'contracts/tic-tac-toe.clar'
+
+[contracts.tic-tac-toe-v2]
+path = 'contracts/tic-tac-toe-v2.clar'
 clarity_version = 3
 epoch = 3.0
+
+[contracts.game-tournament-trait]
+path = 'contracts/game-tournament-trait.clar'
+clarity_version = 3
+epoch = 3.0
+
+[contracts.tournament]
+path = 'contracts/tournament.clar'
+clarity_version = 3
+epoch = 3.0
+
 [repl.analysis]
 passes = ['check_checker']
 

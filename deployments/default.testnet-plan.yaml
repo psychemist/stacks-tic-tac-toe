@@ -9,10 +9,24 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: tic-tac-toe
-            expected-sender: ST3P49R8XXQWG69S66MZASYPTTGNDKK0WW32RRJDN
-            cost: 90730
-            path: contracts/tic-tac-toe.clar
+            contract-name: game-tournament-trait
+            expected-sender: ST16XCPGV6CVM7D5M1H3BGT0VKDGNFKPRDSQXRW88
+            cost: 3060
+            path: contracts/game-tournament-trait.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: tic-tac-toe-v2
+            expected-sender: ST16XCPGV6CVM7D5M1H3BGT0VKDGNFKPRDSQXRW88
+            cost: 110140
+            path: contracts/tic-tac-toe-v2.clar
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: tournament
+            expected-sender: ST16XCPGV6CVM7D5M1H3BGT0VKDGNFKPRDSQXRW88
+            cost: 130690
+            path: contracts/tournament.clar
             anchor-block-only: true
             clarity-version: 3
       epoch: "3.0"
