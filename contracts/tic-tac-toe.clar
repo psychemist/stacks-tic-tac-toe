@@ -5,8 +5,14 @@
 (define-constant ERR_GAME_CANNOT_BE_JOINED u103) ;; Error thrown when a game cannot be joined, usually because it already has two players
 (define-constant ERR_NOT_YOUR_TURN u104) ;; Error thrown when a player tries to make a move when it is not their turn
 
+;; Implement the tournament-game-trait
+(impl-trait .tournament-game-trait.tournament-game-trait)
+
 ;; The Game ID to use for the next game
 (define-data-var latest-game-id uint u0)
+
+;; tournament contract will be set after deployment
+(define-data-var tournament-contract (optional principal) none)
 
 (define-map games 
     uint ;; Key (Game ID)
@@ -18,7 +24,11 @@
         bet-amount: uint,
         board: (list 9 uint),
         
-        winner: (optional principal)
+        winner: (optional principal),
+        ;; Tournament integration
+        tournament-id: (optional uint),
+        tournament-round: (optional uint),
+        tournament-match: (optional uint)
     }
 )
 
@@ -37,7 +47,10 @@
             is-player-one-turn: false,
             bet-amount: bet-amount,
             board: game-board,
-            winner: none
+            winner: none,
+            tournament-id: none,
+            tournament-round: none,
+            tournament-match: none
         })
     )
 
@@ -139,6 +152,7 @@
 
     ;; Log the action of a move being made
     (print {action: "play", data: game-data})
+    
     ;; Return the Game ID of the game
     (ok game-id)
 ))
@@ -166,6 +180,45 @@
     ;; All three conditions must be true for the move to be valid
     (and (is-eq index-in-range true) (is-eq x-or-o true) empty-spot)
 ))
+
+;; Admin function to set the tournament contract address after deployment
+(define-public (set-tournament-contract (contract principal))
+    (begin
+        ;; In production, add authorization check here (e.g., only contract deployer can call this)
+        (var-set tournament-contract (some contract))
+        (ok true)
+    )
+)
+
+;; create a game on behalf of the tournament contract with no bet transfers
+(define-public (create-tournament-game (player-one principal) (player-two principal) (tid uint) (round uint) (match-num uint))
+    (let (
+        (game-id (var-get latest-game-id))
+        (starting-board (list u0 u0 u0 u0 u0 u0 u0 u0 u0))
+        (game-data {
+            player-one: player-one,
+            player-two: (some player-two),
+            is-player-one-turn: true,
+            bet-amount: u0,
+            board: starting-board,
+            winner: none,
+            tournament-id: (some tid),
+            tournament-round: (some round),
+            tournament-match: (some match-num)
+        })
+    )
+
+        ;; assert caller is tournament contract
+        (asserts! (is-eq (some contract-caller) (var-get tournament-contract)) (err u999))
+
+        ;; update games mapping with tournament game
+        (map-set games game-id game-data)
+        (var-set latest-game-id (+ game-id u1))
+
+        (print { action: "create-tournament-game", game-id: game-id, tournament-id: tid, round: round, match: match-num })
+        (ok game-id)
+    )
+)
 
 ;; Given a board, return true if any possible three-in-a-row line has been completed
 (define-private (has-won (board (list 9 uint))) 
