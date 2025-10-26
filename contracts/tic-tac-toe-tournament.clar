@@ -212,38 +212,6 @@
   )
 )
 
-;; ;; Old manual reporting function - DEPRECATED, kept for backwards compatibility but should not be used
-;; ;; Report a match result. For phase 1, restrict to creator for manual advancement.
-;; (define-public (report-match-result (tid uint) (round uint) (match-number uint) (winner principal))
-;;   ;; fetch tournament data
-;;   (let (
-;;     (meta (try! (get-tournament-or-err tid)))
-;;     (key { tournament-id: tid, round: round, match-number: match-number })
-;;     (match (unwrap! (map-get? tournament-matches key) (err ERR_MATCH_NOT_FOUND)))
-;;   )
-
-;;     ;; assert only tournament creator can report results!
-;;     (asserts! (is-eq (get creator meta) tx-sender) (err ERR_UNAUTHORIZED))
-;;     (asserts! (is-eq (get status meta) STATUS_IN_PROGRESS) (err ERR_NOT_IN_PROGRESS))
-;;     (asserts! (is-eq (get completed match) false) (err ERR_MATCH_ALREADY_COMPLETED))
-
-;;     ;; get match players
-;;     (let (
-;;       (p1 (default-to 'SP000000000000000000002Q6VF78 (get player1 match)))
-;;       (p2 (default-to 'SP000000000000000000002Q6VF78 (get player2 match)))
-;;     )
-
-;;       ;; confirm winner is verified player; update match record
-;;       (asserts! (or (is-eq winner p1) (is-eq winner p2)) (err ERR_INVALID_WINNER))
-;;       (map-set tournament-matches key (merge match { winner: (some winner), completed: true }))
-
-;;       ;; emit event; return true
-;;       (print { action: "match-complete", id: tid, round: round, match: match-number, winner: winner })
-;;       (ok true)
-;;     )
-;;   )
-;; )
-
 
 ;; PRIVATE HELPER FUNCTIONS
 

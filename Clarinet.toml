@@ -16,8 +16,8 @@ path = 'contracts/game-tournament-trait.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.tournament]
-path = 'contracts/tournament.clar'
+[contracts.tic-tac-toe-tournament]
+path = 'contracts/tic-tac-toe-tournament.clar'
 clarity_version = 3
 epoch = 3.0
 
