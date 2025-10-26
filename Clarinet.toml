@@ -6,18 +6,18 @@ telemetry = false
 cache_dir = './.cache'
 requirements = []
 
-[contracts.tic-tac-toe-v2]
-path = 'contracts/tic-tac-toe-v2.clar'
-clarity_version = 3
-epoch = 3.0
-
 [contracts.game-tournament-trait]
 path = 'contracts/game-tournament-trait.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.tic-tac-toe-tournament]
-path = 'contracts/tic-tac-toe-tournament.clar'
+[contracts.tic-tac-toe-tournament-v2]
+path = 'contracts/tic-tac-toe-tournament-v2.clar'
+clarity_version = 3
+epoch = 3.0
+
+[contracts.tic-tac-toe-v2]
+path = 'contracts/tic-tac-toe-v2.clar'
 clarity_version = 3
 epoch = 3.0
 

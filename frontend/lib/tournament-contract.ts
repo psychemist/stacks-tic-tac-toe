@@ -15,7 +15,7 @@ import {
 
 // Contract identifiers
 const CONTRACT_ADDRESS = "ST16XCPGV6CVM7D5M1H3BGT0VKDGNFKPRDSQXRW88";
-const TOURNAMENT_CONTRACT_NAME = "tic-tac-toe-tournament";
+const TOURNAMENT_CONTRACT_NAME = "tic-tac-toe-tournament-v2";
 const TIC_TAC_TOE_CONTRACT_NAME = "tic-tac-toe-v2";
 
 // Tournament status constants (matching contract)

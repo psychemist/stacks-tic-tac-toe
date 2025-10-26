@@ -296,6 +296,11 @@
 
 ;; READ-ONLY FUNCTIONS
 
+;; get the latest tournament id (for fetching all tournaments easily)
+(define-read-only (get-latest-tournament-id)
+  (var-get latest-tournament-id)
+)
+
 ;; public getter for tournament metadata
 (define-read-only (get-tournament (tid uint))
   (map-get? tournaments tid)
