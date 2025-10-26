@@ -25,6 +25,7 @@ export function useStacks() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [stxBalance, setStxBalance] = useState(0);
   const [userAddress, setUserAddress] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
 
   async function connectWallet() {
     try {
@@ -185,6 +186,13 @@ export function useStacks() {
     }
   }, [userAddress]);
 
+  useEffect(() => {
+    // Check connection status only on client side
+    if (typeof window !== 'undefined') {
+      setConnected(isConnected() || userSession.isUserSignedIn());
+    }
+  }, [userData]);
+
   return {
     userData,
     userAddress,
@@ -194,6 +202,6 @@ export function useStacks() {
     handleCreateGame,
     handleJoinGame,
     handlePlayGame,
-    isConnected: isConnected() || userSession.isUserSignedIn(),
+    isConnected: connected,
   };
 }
