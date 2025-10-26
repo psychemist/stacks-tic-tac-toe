@@ -164,8 +164,7 @@
     ;; start tournament with updated values
     (let (
       (round u1)
-      ;; TODO: start time should be stacks-block-timestamp
-      (started-meta (merge meta { status: STATUS_IN_PROGRESS, start-time: (some u0), current-round: round }))
+      (started-meta (merge meta { status: STATUS_IN_PROGRESS, start-time: (some stacks-block-height), current-round: round }))
     )
       ;; update tournament mapping
       (map-set tournaments tid started-meta)
@@ -187,24 +186,24 @@
   (let (
     (meta (try! (get-tournament-or-err tid)))
     (key { tournament-id: tid, round: round, match-number: match-number })
-    (match (unwrap! (map-get? tournament-matches key) (err ERR_MATCH_NOT_FOUND)))
+    (match-data (unwrap! (map-get? tournament-matches key) (err ERR_MATCH_NOT_FOUND)))
   )
 
     ;; assert caller is tic-tac-toe contract and verify match details
     (asserts! (is-eq contract-caller .tic-tac-toe) (err ERR_UNAUTHORIZED))
     (asserts! (is-eq (get status meta) STATUS_IN_PROGRESS) (err ERR_NOT_IN_PROGRESS))
-    (asserts! (is-eq (get completed match) false) (err ERR_MATCH_ALREADY_COMPLETED))
+    (asserts! (is-eq (get completed match-data) false) (err ERR_MATCH_ALREADY_COMPLETED))
 
     ;; fetch match players
     (let (
-      (p1 (unwrap! (get player1 match) (err ERR_INVALID_PARAMS)))
-      (p2 (unwrap! (get player2 match) (err ERR_INVALID_PARAMS)))
+      (p1 (unwrap! (get player1 match-data) (err ERR_INVALID_PARAMS)))
+      (p2 (unwrap! (get player2 match-data) (err ERR_INVALID_PARAMS)))
     )
       ;; verify winner is one of the two players
       (asserts! (or (is-eq winner p1) (is-eq winner p2)) (err ERR_INVALID_WINNER))
       
       ;; update match with winner and mark as completed
-      (map-set tournament-matches key (merge match { winner: (some winner), completed: true }))
+      (map-set tournament-matches key (merge match-data { winner: (some winner), completed: true }))
 
       ;; emit event; return true
       (print { action: "match-complete", id: tid, round: round, match: match-number, winner: winner })
