@@ -10,6 +10,7 @@ import {
   type UserData,
   UserSession,
 } from "@stacks/connect";
+import { STACKS_TESTNET } from "@stacks/network";
 import { PostConditionMode } from "@stacks/transactions";
 import { useEffect, useState } from "react";
 
@@ -29,16 +30,18 @@ export function useStacks() {
 
   async function connectWallet() {
     try {
-      console.log("=== Connecting Wallet ===");
       await connect();
-      console.log("Wallet connected successfully");
       
-      // Get user address after connection
+      // Get user address after connection; prioritize testnet
       let address = null;
       if (isConnected()) {
         const data = getLocalStorage();
         if (data?.addresses?.stx && data.addresses.stx.length > 0) {
-          address = data.addresses.stx[0].address;
+          type StxAddress = { address: string; network?: string };
+          const testnetAddr = data.addresses.stx.find((addr: StxAddress) => 
+            addr.network === 'testnet' || addr.address.startsWith('ST')
+          );
+          address = testnetAddr?.address || data.addresses.stx[0].address;
           setUserAddress(address);
         }
       } else if (userSession.isUserSignedIn()) {
@@ -84,6 +87,7 @@ export function useStacks() {
       await openContractCall({
         ...txOptions,
         appDetails,
+        network: STACKS_TESTNET,
         onFinish: (data) => {
           console.log(data);
           window.alert("Sent create game transaction");
@@ -110,6 +114,7 @@ export function useStacks() {
       await openContractCall({
         ...txOptions,
         appDetails,
+        network: STACKS_TESTNET,
         onFinish: (data) => {
           console.log(data);
           window.alert("Sent join game transaction");
@@ -136,6 +141,7 @@ export function useStacks() {
       await openContractCall({
         ...txOptions,
         appDetails,
+        network: STACKS_TESTNET,
         onFinish: (data) => {
           console.log(data);
           window.alert("Sent play game transaction");
@@ -154,14 +160,25 @@ export function useStacks() {
     if (isConnected()) {
       const data = getLocalStorage();
       if (data?.addresses?.stx && data.addresses.stx.length > 0) {
-        const address = data.addresses.stx[0].address;
+        // Check if there's a testnet address in the array
+        type StxAddress = { address: string; network?: string };
+        const testnetAddr = data.addresses.stx.find((addr: StxAddress) => 
+          addr.network === 'testnet' || addr.address.startsWith('ST')
+        );
+        const mainnetAddr = data.addresses.stx.find((addr: StxAddress) => 
+          addr.network === 'mainnet' || addr.address.startsWith('SP')
+        );
+        
+        // Use testnet address for our testnet app
+        const address = testnetAddr?.address || data.addresses.stx[0].address;
         setUserAddress(address);
+
         // Create minimal userData for compatibility
         setUserData({
           profile: {
             stxAddress: {
-              testnet: address,
-              mainnet: address,
+              testnet: testnetAddr?.address || address,
+              mainnet: mainnetAddr?.address || address,
             },
           },
         } as UserData);

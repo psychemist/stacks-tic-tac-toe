@@ -154,40 +154,45 @@ export async function startTournament(tournamentId: number) {
 export async function getTournament(
   tournamentId: number
 ): Promise<Tournament | null> {
-  const tournamentCV = await fetchCallReadOnlyFunction({
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: TOURNAMENT_CONTRACT_NAME,
-    functionName: "get-tournament",
-    functionArgs: [uintCV(tournamentId)],
-    senderAddress: CONTRACT_ADDRESS,
-    network: STACKS_TESTNET,
-  });
+  try {
+    const tournamentCV = await fetchCallReadOnlyFunction({
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: TOURNAMENT_CONTRACT_NAME,
+      functionName: "get-tournament",
+      functionArgs: [uintCV(tournamentId)],
+      senderAddress: CONTRACT_ADDRESS,
+      network: STACKS_TESTNET,
+    });
 
-  const responseCV = tournamentCV as OptionalCV<TupleCV<TournamentCV>>;
-  
-  if (responseCV.type === "none") return null;
-  if (responseCV.value.type !== "tuple") return null;
+    const responseCV = tournamentCV as OptionalCV<TupleCV<TournamentCV>>;
+    
+    if (responseCV.type === "none") return null;
+    if (responseCV.value.type !== "tuple") return null;
 
-  const tCV = responseCV.value.value;
+    const tCV = responseCV.value.value;
 
-  const tournament: Tournament = {
-    id: tournamentId,
-    creator: tCV.creator.value,
-    name: tCV.name.value,
-    entryFee: parseInt(tCV["entry-fee"].value.toString()),
-    maxPlayers: parseInt(tCV["max-players"].value.toString()),
-    prizePool: parseInt(tCV["prize-pool"].value.toString()),
-    status: parseInt(tCV.status.value.toString()),
-    startTime:
-      tCV["start-time"].type === "some"
-        ? parseInt(tCV["start-time"].value.value.toString())
-        : null,
-    winner:
-      tCV.winner.type === "some" ? tCV.winner.value.value : null,
-    currentRound: parseInt(tCV["current-round"].value.toString()),
-  };
+    const tournament: Tournament = {
+      id: tournamentId,
+      creator: tCV.creator.value,
+      name: tCV.name.value,
+      entryFee: parseInt(tCV["entry-fee"].value.toString()),
+      maxPlayers: parseInt(tCV["max-players"].value.toString()),
+      prizePool: parseInt(tCV["prize-pool"].value.toString()),
+      status: parseInt(tCV.status.value.toString()),
+      startTime:
+        tCV["start-time"].type === "some"
+          ? parseInt(tCV["start-time"].value.value.toString())
+          : null,
+      winner:
+        tCV.winner.type === "some" ? tCV.winner.value.value : null,
+      currentRound: parseInt(tCV["current-round"].value.toString()),
+    };
 
-  return tournament;
+    return tournament;
+  } catch (error) {
+    console.error(`Error fetching tournament ${tournamentId}:`, error);
+    return null;
+  }
 }
 
 /**
@@ -197,29 +202,35 @@ export async function getTournamentParticipant(
   tournamentId: number,
   playerAddress: string
 ): Promise<TournamentParticipant | null> {
-  const participantCV = await fetchCallReadOnlyFunction({
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: TOURNAMENT_CONTRACT_NAME,
-    functionName: "get-participant",
-    functionArgs: [uintCV(tournamentId), standardPrincipalCV(playerAddress)],
-    senderAddress: CONTRACT_ADDRESS,
-    network: STACKS_TESTNET,
-  });
+  try {
+    const participantCV = await fetchCallReadOnlyFunction({
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: TOURNAMENT_CONTRACT_NAME,
+      functionName: "get-participant",
+      functionArgs: [uintCV(tournamentId), standardPrincipalCV(playerAddress)],
+      senderAddress: CONTRACT_ADDRESS,
+      network: STACKS_TESTNET,
+    });
 
-  const responseCV = participantCV as OptionalCV<TupleCV<ParticipantCV>>;
+    const responseCV = participantCV as OptionalCV<TupleCV<ParticipantCV>>;
 
-  if (responseCV.type === "none") return null;
-  if (responseCV.value.type !== "tuple") return null;
+    if (responseCV.type === "none") return null;
+    if (responseCV.value.type !== "tuple") return null;
 
-  const pCV = responseCV.value.value;
+    const pCV = responseCV.value.value;
 
-  const participant: TournamentParticipant = {
-    registrationTime: parseInt(pCV["registration-time"].value.toString()),
-    bracketPosition: parseInt(pCV["bracket-position"].value.toString()),
-    eliminated: pCV.eliminated.type === "true",
-  };
+    const participant: TournamentParticipant = {
+      registrationTime: parseInt(pCV["registration-time"].value.toString()),
+      bracketPosition: parseInt(pCV["bracket-position"].value.toString()),
+      eliminated: pCV.eliminated.type === "true",
+    };
 
-  return participant;
+    return participant;
+  } catch (error) {
+    console.error(`Error fetching participant for tournament ${tournamentId}:`, error);
+    // Return null instead of throwing - participant might not exist
+    return null;
+  }
 }
 
 /**
@@ -230,36 +241,41 @@ export async function getTournamentMatch(
   round: number,
   matchNumber: number
 ): Promise<TournamentMatch | null> {
-  const matchCV = await fetchCallReadOnlyFunction({
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: TOURNAMENT_CONTRACT_NAME,
-    functionName: "get-match",
-    functionArgs: [uintCV(tournamentId), uintCV(round), uintCV(matchNumber)],
-    senderAddress: CONTRACT_ADDRESS,
-    network: STACKS_TESTNET,
-  });
+  try {
+    const matchCV = await fetchCallReadOnlyFunction({
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: TOURNAMENT_CONTRACT_NAME,
+      functionName: "get-match",
+      functionArgs: [uintCV(tournamentId), uintCV(round), uintCV(matchNumber)],
+      senderAddress: CONTRACT_ADDRESS,
+      network: STACKS_TESTNET,
+    });
 
-  const responseCV = matchCV as OptionalCV<TupleCV<MatchCV>>;
+    const responseCV = matchCV as OptionalCV<TupleCV<MatchCV>>;
 
-  if (responseCV.type === "none") return null;
-  if (responseCV.value.type !== "tuple") return null;
+    if (responseCV.type === "none") return null;
+    if (responseCV.value.type !== "tuple") return null;
 
-  const mCV = responseCV.value.value;
+    const mCV = responseCV.value.value;
 
-  const match: TournamentMatch = {
-    gameId:
-      mCV["game-id"].type === "some"
-        ? parseInt(mCV["game-id"].value.value.toString())
-        : null,
-    player1:
-      mCV.player1.type === "some" ? mCV.player1.value.value : null,
-    player2:
-      mCV.player2.type === "some" ? mCV.player2.value.value : null,
-    winner: mCV.winner.type === "some" ? mCV.winner.value.value : null,
-    completed: mCV.completed.type === "true",
-  };
+    const match: TournamentMatch = {
+      gameId:
+        mCV["game-id"].type === "some"
+          ? parseInt(mCV["game-id"].value.value.toString())
+          : null,
+      player1:
+        mCV.player1.type === "some" ? mCV.player1.value.value : null,
+      player2:
+        mCV.player2.type === "some" ? mCV.player2.value.value : null,
+      winner: mCV.winner.type === "some" ? mCV.winner.value.value : null,
+      completed: mCV.completed.type === "true",
+    };
 
-  return match;
+    return match;
+  } catch (error) {
+    console.error(`Error fetching match for tournament ${tournamentId}, round ${round}, match ${matchNumber}:`, error);
+    return null;
+  }
 }
 
 /**

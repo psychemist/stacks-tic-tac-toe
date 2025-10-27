@@ -11,6 +11,7 @@ import {
   type TournamentParticipant,
 } from "@/lib/tournament-contract";
 import { openContractCall } from "@stacks/connect";
+import { STACKS_TESTNET } from "@stacks/network";
 import { PostConditionMode } from "@stacks/transactions";
 import { useEffect, useState } from "react";
 
@@ -41,6 +42,7 @@ export function useTournaments(userAddress: string | null) {
       await openContractCall({
         ...txOptions,
         appDetails,
+        network: STACKS_TESTNET,
         onFinish: (data) => {
           console.log("Tournament created:", data);
           window.alert("Tournament created successfully!");
@@ -72,6 +74,7 @@ export function useTournaments(userAddress: string | null) {
       await openContractCall({
         ...txOptions,
         appDetails,
+        network: STACKS_TESTNET,
         onFinish: (data) => {
           console.log("Joined tournament:", data);
           window.alert("Joined tournament successfully!");
@@ -103,6 +106,7 @@ export function useTournaments(userAddress: string | null) {
       await openContractCall({
         ...txOptions,
         appDetails,
+        network: STACKS_TESTNET,
         onFinish: (data) => {
           console.log("Tournament started:", data);
           window.alert("Tournament started successfully!");

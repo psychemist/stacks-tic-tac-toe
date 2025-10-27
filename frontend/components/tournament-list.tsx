@@ -78,7 +78,13 @@ function TournamentCard({ tournament }: TournamentCardProps) {
           <div className="flex justify-between">
             <span>Prize Pool:</span>
             <span className="font-semibold text-green-600">
-              {(tournament.prizePool / 1_000_000).toFixed(6)} STX
+              {tournament.prizePool === 0 ? (
+                <span className="text-gray-400" title="Prize pool grows as players join">
+                  0.000000 STX
+                </span>
+              ) : (
+                `${(tournament.prizePool / 1_000_000).toFixed(6)} STX`
+              )}
             </span>
           </div>
 
