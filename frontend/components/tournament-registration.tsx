@@ -21,7 +21,9 @@ export function TournamentRegistration({
   const [isProcessing, setIsProcessing] = useState(false);
 
   const isCreator = userAddress === tournament.creator;
-  const canJoin = tournament.status === TOURNAMENT_STATUS.OPEN && !isParticipant && userAddress;
+  const playerCount = tournament.playerCount || 0;
+  const isFull = playerCount >= tournament.maxPlayers;
+  const canJoin = tournament.status === TOURNAMENT_STATUS.OPEN && !isParticipant && !isFull && userAddress;
   const canStart = tournament.status === TOURNAMENT_STATUS.OPEN && isCreator;
 
   const handleJoin = async () => {
@@ -77,6 +79,18 @@ export function TournamentRegistration({
       {isParticipant && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
           <p className="text-green-800 font-semibold">✓ You are registered</p>
+          <p className="text-sm text-green-600 mt-1">
+            Players: {playerCount}/{tournament.maxPlayers}
+          </p>
+        </div>
+      )}
+
+      {isFull && !isParticipant && tournament.status === TOURNAMENT_STATUS.OPEN && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+          <p className="text-orange-800 font-semibold">🔒 Tournament Full</p>
+          <p className="text-sm text-orange-600 mt-1">
+            All {tournament.maxPlayers} slots have been filled
+          </p>
         </div>
       )}
 
@@ -103,7 +117,7 @@ export function TournamentRegistration({
       {isCreator && !canStart && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
           <p className="text-yellow-800 text-sm">
-            Waiting for {tournament.maxPlayers} players to join
+            Waiting for {tournament.maxPlayers} players to join ({playerCount}/{tournament.maxPlayers})
           </p>
         </div>
       )}

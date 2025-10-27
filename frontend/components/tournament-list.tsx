@@ -41,8 +41,14 @@ interface TournamentCardProps {
 
 function TournamentCard({ tournament }: TournamentCardProps) {
   const getStatusBadge = (status: number) => {
+    // Check if tournament is full
+    const isFull = (tournament.playerCount || 0) >= tournament.maxPlayers;
+    
     switch (status) {
       case TOURNAMENT_STATUS.OPEN:
+        if (isFull) {
+          return <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">🟠 Full</span>;
+        }
         return <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">🟢 Open</span>;
       case TOURNAMENT_STATUS.IN_PROGRESS:
         return <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm">🟡 In Progress</span>;
@@ -55,8 +61,8 @@ function TournamentCard({ tournament }: TournamentCardProps) {
     }
   };
 
-  // Calculate player count (would need to track this separately or query contract)
-  const playerCount = 0; // Placeholder - needs implementation
+  // Use player count from tournament data (calculated from prize pool)
+  const playerCount = tournament.playerCount || 0;
   const progress = `${playerCount}/${tournament.maxPlayers}`;
 
   return (
