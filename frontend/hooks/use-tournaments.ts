@@ -6,6 +6,7 @@ import {
   getAllTournaments,
   getTournamentParticipant,
   getTournamentMatch,
+  clearTournamentCache,
   type Tournament,
   type TournamentMatch,
   type TournamentParticipant,
@@ -46,7 +47,8 @@ export function useTournaments(userAddress: string | null) {
         onFinish: (data) => {
           console.log("Tournament created:", data);
           window.alert("Tournament created successfully!");
-          // Refresh tournaments list
+          // Clear cache and refresh tournaments list
+          clearTournamentCache();
           setRefreshKey((prev) => prev + 1);
         },
         onCancel: () => {
@@ -78,7 +80,8 @@ export function useTournaments(userAddress: string | null) {
         onFinish: (data) => {
           console.log("Joined tournament:", data);
           window.alert("Joined tournament successfully!");
-          // Refresh tournaments list
+          // Clear cache and refresh tournaments list
+          clearTournamentCache(tournamentId);
           setRefreshKey((prev) => prev + 1);
         },
         onCancel: () => {
@@ -110,7 +113,8 @@ export function useTournaments(userAddress: string | null) {
         onFinish: (data) => {
           console.log("Tournament started:", data);
           window.alert("Tournament started successfully!");
-          // Refresh tournaments list
+          // Clear cache and refresh tournaments list
+          clearTournamentCache(tournamentId);
           setRefreshKey((prev) => prev + 1);
         },
         onCancel: () => {

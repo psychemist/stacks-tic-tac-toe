@@ -33,6 +33,12 @@ export default function TournamentsPage() {
         </div>
       )}
 
+      {loading && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-center text-sm text-blue-800">
+          <p>Loading tournaments... This may take a moment due to API rate limits.</p>
+        </div>
+      )}
+
       <TournamentList tournaments={tournaments} loading={loading} />
     </div>
   );

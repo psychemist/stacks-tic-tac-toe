@@ -18,6 +18,10 @@ const CONTRACT_ADDRESS = "ST16XCPGV6CVM7D5M1H3BGT0VKDGNFKPRDSQXRW88";
 const TOURNAMENT_CONTRACT_NAME = "tic-tac-toe-tournament-v2";
 const TIC_TAC_TOE_CONTRACT_NAME = "tic-tac-toe-v2";
 
+// Cache for tournaments to reduce API calls
+const tournamentsCache = new Map<number, { tournament: Tournament; timestamp: number }>();
+const CACHE_TTL = 30000; // 30 seconds cache
+
 // Tournament status constants (matching contract)
 export const TOURNAMENT_STATUS = {
   OPEN: 0,
@@ -154,6 +158,12 @@ export async function startTournament(tournamentId: number) {
 export async function getTournament(
   tournamentId: number
 ): Promise<Tournament | null> {
+  // Check cache first
+  const cached = tournamentsCache.get(tournamentId);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.tournament;
+  }
+
   try {
     const tournamentCV = await fetchCallReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
@@ -188,9 +198,16 @@ export async function getTournament(
       currentRound: parseInt(tCV["current-round"].value.toString()),
     };
 
+    // Update cache
+    tournamentsCache.set(tournamentId, { tournament, timestamp: Date.now() });
+    
     return tournament;
   } catch (error) {
     console.error(`Error fetching tournament ${tournamentId}:`, error);
+    // Return cached value if available, even if expired
+    if (cached) {
+      return cached.tournament;
+    }
     return null;
   }
 }
@@ -307,13 +324,31 @@ export async function getAllTournaments(): Promise<Tournament[]> {
       if (tournament) {
         tournaments.push(tournament);
       }
-      // Add small delay to avoid rate limiting (100ms between requests)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Increase delay to avoid rate limiting (300ms between requests)
+      if (i < latestTournamentId - 1) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
     }
     
     return tournaments;
   } catch (error) {
     console.error("Error fetching all tournaments:", error);
-    return [];
+    // If rate limited, return cached tournaments
+    const cachedTournaments: Tournament[] = [];
+    tournamentsCache.forEach(({ tournament }) => {
+      cachedTournaments.push(tournament);
+    });
+    return cachedTournaments;
+  }
+}
+
+/**
+ * Clear tournament cache (useful after creating/joining/starting tournaments)
+ */
+export function clearTournamentCache(tournamentId?: number) {
+  if (tournamentId !== undefined) {
+    tournamentsCache.delete(tournamentId);
+  } else {
+    tournamentsCache.clear();
   }
 }
