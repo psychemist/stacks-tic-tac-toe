@@ -85,9 +85,9 @@ function MatchCard({ match, matchNumber }: MatchCardProps) {
         <div className="mt-3 pt-3 border-t">
           <Link
             href={`/game/${gameId}`}
-            className="text-xs text-blue-600 hover:text-blue-800 block text-center"
+            className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded block text-center transition-colors"
           >
-            View Game →
+            {completed ? "View Game 🔍 →" : "Play Now 🎮"}
           </Link>
         </div>
       )}

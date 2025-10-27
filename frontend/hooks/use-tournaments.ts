@@ -179,7 +179,17 @@ export function useTournaments(userAddress: string | null) {
     setLoading(true);
     try {
       const allTournaments = await getAllTournaments();
-      setTournaments(allTournaments);
+      
+      // Fetch player counts for each tournament
+      // Calculate from prize pool (prize pool = entry fee × player count)
+      const tournamentsWithCounts = allTournaments.map(tournament => ({
+        ...tournament,
+        playerCount: tournament.entryFee > 0 
+          ? Math.floor(tournament.prizePool / tournament.entryFee) 
+          : 0
+      }));
+      
+      setTournaments(tournamentsWithCounts);
     } catch (error) {
       console.error("Failed to fetch tournaments:", error);
       setTournaments([]);
@@ -199,7 +209,9 @@ export function useTournaments(userAddress: string | null) {
     
     // Fetch tournament to get max players
     const tournament = await fetchTournament(tournamentId);
-    if (!tournament) return matches;
+    if (!tournament) {
+      return matches;
+    }
 
     // Calculate number of matches in this round
     // Round 1: maxPlayers / 2 matches

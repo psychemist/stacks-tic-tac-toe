@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useStacks } from "@/hooks/use-stacks";
 import { useTournaments } from "@/hooks/use-tournaments";
 import { TournamentRegistration } from "@/components/tournament-registration";
@@ -30,6 +31,12 @@ export default function TournamentDetailPage() {
     async function loadTournament() {
       setLoading(true);
       const t = await fetchTournament(tournamentId);
+      
+      // Calculate player count from prize pool
+      if (t) {
+        t.playerCount = t.entryFee > 0 ? Math.floor(t.prizePool / t.entryFee) : 0;
+      }
+      
       setTournament(t);
 
       if (t && userAddress) {
@@ -154,6 +161,75 @@ export default function TournamentDetailPage() {
           onStart={handleStartTournament}
           isParticipant={isParticipant}
         />
+
+        {/* User's Active Match */}
+        {userAddress && isParticipant && tournament.status === TOURNAMENT_STATUS.IN_PROGRESS && (
+          <div className="mt-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">🎮 Your Match</h2>
+            </div>
+            {(() => {
+              // Find user's active match across all rounds
+              let activeMatch: { match: TournamentMatch; roundIndex: number } | null = null;
+
+              for (let roundIndex = 0; roundIndex < roundMatches.length; roundIndex++) {
+                const matches = roundMatches[roundIndex];
+                const userMatch = matches.find(
+                  (match) =>
+                    match.player1 === userAddress ||
+                    match.player2 === userAddress
+                );
+
+                if (userMatch && !userMatch.completed) {
+                  activeMatch = { match: userMatch, roundIndex };
+                  break;
+                }
+              }
+              
+              if (activeMatch) {
+                const { match, roundIndex } = activeMatch;
+                const opponent = match.player1 === userAddress ? match.player2 : match.player1;
+                
+                return (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm opacity-90">Round {roundIndex + 1}</p>
+                        <p className="text-lg font-semibold">
+                          vs {opponent ? `${opponent.slice(0, 8)}...${opponent.slice(-6)}` : 'TBD'}
+                        </p>
+                        {match.gameId === null && (
+                          <p className="text-xs opacity-75 mt-1">Waiting for game to be created...</p>
+                        )}
+                      </div>
+                      {match.gameId !== null ? (
+                        <Link
+                          href={`/game/${match.gameId}`}
+                          className="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg hover:bg-blue-50 transition-colors shadow-md"
+                        >
+                          Play Now →
+                        </Link>
+                      ) : (
+                        <button
+                          disabled
+                          className="bg-gray-300 text-gray-600 font-bold py-3 px-8 rounded-lg cursor-not-allowed opacity-75"
+                        >
+                          Game Starting...
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+              
+              return (
+                <p className="text-sm opacity-90">
+                  No active matches at the moment. Check the bracket below for details.
+                </p>
+              );
+            })()}
+          </div>
+        )}
 
         {(tournament.status === TOURNAMENT_STATUS.IN_PROGRESS || 
           tournament.status === TOURNAMENT_STATUS.COMPLETED) && (

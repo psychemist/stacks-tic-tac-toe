@@ -69,6 +69,7 @@ export interface Tournament {
   startTime: number | null;
   winner: string | null;
   currentRound: number;
+  playerCount?: number;
 }
 
 export interface TournamentParticipant {
@@ -343,6 +344,26 @@ export async function getAllTournaments(): Promise<Tournament[]> {
 }
 
 /**
+ * Get player count for a tournament by calculating from prize pool
+ * Prize pool = entry fee × number of players joined
+ */
+export async function getTournamentPlayerCount(tournamentId: number): Promise<number> {
+  try {
+    const tournament = await getTournament(tournamentId);
+    if (!tournament || tournament.entryFee === 0) return 0;
+
+    // Calculate player count from prize pool
+    // prizePool = entryFee * playerCount
+    const playerCount = Math.floor(tournament.prizePool / tournament.entryFee);
+    
+    return playerCount;
+  } catch (error) {
+    console.error(`Error calculating player count for tournament ${tournamentId}:`, error);
+    return 0;
+  }
+}
+
+/**
  * Clear tournament cache (useful after creating/joining/starting tournaments)
  */
 export function clearTournamentCache(tournamentId?: number) {
@@ -352,3 +373,4 @@ export function clearTournamentCache(tournamentId?: number) {
     tournamentsCache.clear();
   }
 }
+
