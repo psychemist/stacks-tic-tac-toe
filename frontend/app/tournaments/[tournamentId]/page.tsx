@@ -18,6 +18,7 @@ export default function TournamentDetailPage() {
     fetchTournament,
     fetchParticipant,
     fetchRoundMatches,
+    handleAdvanceRound,
     handleJoinTournament,
     handleStartTournament,
   } = useTournaments(userAddress);
@@ -159,6 +160,7 @@ export default function TournamentDetailPage() {
           userAddress={userAddress}
           onJoin={handleJoinTournament}
           onStart={handleStartTournament}
+          onAdvanceRound={handleAdvanceRound}
           isParticipant={isParticipant}
         />
 

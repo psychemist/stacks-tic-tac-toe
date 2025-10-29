@@ -2,6 +2,7 @@ import {
   createTournament,
   joinTournament,
   startTournament,
+  advanceRound,
   getTournament,
   getAllTournaments,
   getTournamentParticipant,
@@ -130,6 +131,39 @@ export function useTournaments(userAddress: string | null) {
   }
 
   /**
+   * Advance the round of a tournament (creator only)
+   */
+  async function handleAdvanceRound(tournamentId: number, round: number) {
+    if (typeof window === "undefined") return;
+    
+    try {
+      if (!userAddress) throw new Error("User not connected");
+      
+      const txOptions = await advanceRound(tournamentId, round);
+      await openContractCall({
+        ...txOptions,
+        appDetails,
+        network: STACKS_TESTNET,
+        onFinish: (data) => {
+          console.log("Round advanced:", data);
+          window.alert("Round advanced successfully!");
+          // Clear cache and refresh tournaments list
+          clearTournamentCache(tournamentId);
+          setRefreshKey((prev) => prev + 1);
+        },
+        onCancel: () => {
+          console.log("Transaction cancelled");
+        },
+        postConditionMode: PostConditionMode.Allow,
+      });
+    } catch (_err) {
+      const err = _err as Error;
+      console.error(err);
+      window.alert(err.message);
+    }
+  }
+
+  /**
    * Fetch a single tournament by ID
    */
   async function fetchTournament(tournamentId: number): Promise<Tournament | null> {
@@ -239,6 +273,7 @@ export function useTournaments(userAddress: string | null) {
     handleCreateTournament,
     handleJoinTournament,
     handleStartTournament,
+    handleAdvanceRound,
     fetchTournament,
     fetchParticipant,
     fetchMatch,

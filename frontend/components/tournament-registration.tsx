@@ -8,6 +8,7 @@ interface TournamentRegistrationProps {
   userAddress: string | null;
   onJoin: (tournamentId: number) => void;
   onStart: (tournamentId: number) => void;
+  onAdvanceRound: (tournamentId: number, round: number) => void;
   isParticipant: boolean;
 }
 
@@ -16,6 +17,7 @@ export function TournamentRegistration({
   userAddress,
   onJoin,
   onStart,
+  onAdvanceRound,
   isParticipant,
 }: TournamentRegistrationProps) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -25,6 +27,8 @@ export function TournamentRegistration({
   const isFull = playerCount >= tournament.maxPlayers;
   const canJoin = tournament.status === TOURNAMENT_STATUS.OPEN && !isParticipant && !isFull && userAddress;
   const canStart = tournament.status === TOURNAMENT_STATUS.OPEN && isCreator;
+  const canAdvance = (tournament.status === TOURNAMENT_STATUS.IN_PROGRESS || tournament.status === TOURNAMENT_STATUS.COMPLETED) && isCreator;
+  const alreadyStarted = tournament.status === TOURNAMENT_STATUS.IN_PROGRESS || tournament.status === TOURNAMENT_STATUS.COMPLETED;
 
   const handleJoin = async () => {
     setIsProcessing(true);
@@ -39,6 +43,15 @@ export function TournamentRegistration({
     setIsProcessing(true);
     try {
       await onStart(tournament.id);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAdvanceRound = async () => {
+    setIsProcessing(true);
+    try {
+      await onAdvanceRound(tournament.id, tournament.currentRound);
     } finally {
       setIsProcessing(false);
     }
@@ -70,6 +83,15 @@ export function TournamentRegistration({
       <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
         <p className="text-green-800 font-semibold">Tournament in Progress</p>
         <p className="text-sm text-green-600 mt-2">Round {tournament.currentRound}</p>
+        {canAdvance && (
+          <button
+            onClick={handleAdvanceRound}
+            disabled={isProcessing}
+            className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+          >
+            {isProcessing ? "Processing..." : "Advance Round"}
+          </button>
+        )}
       </div>
     );
   }
@@ -107,7 +129,7 @@ export function TournamentRegistration({
       {canStart && (
         <button
           onClick={handleStart}
-          disabled={isProcessing}
+          disabled={isProcessing || alreadyStarted}
           className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition-colors"
         >
           {isProcessing ? "Processing..." : "Start Tournament"}

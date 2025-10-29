@@ -121,7 +121,7 @@ export function PlayGame({ game, tournamentId, round, matchNumber }: PlayGamePro
             <Link
               href={explorerAddress(game["winner"])}
               target="_blank"
-              className="hover:underline"
+              className="hover:underline bg-yellow-500/20 border border-yellow-500 text-yellow-300 px-2 py-1 rounded"
             >
               {abbreviateAddress(game["winner"])}
             </Link>

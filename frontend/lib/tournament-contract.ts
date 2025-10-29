@@ -15,8 +15,8 @@ import {
 
 // Contract identifiers
 const CONTRACT_ADDRESS = "ST16XCPGV6CVM7D5M1H3BGT0VKDGNFKPRDSQXRW88";
-const TOURNAMENT_CONTRACT_NAME = "tic-tac-toe-tournament-v2";
-const TIC_TAC_TOE_CONTRACT_NAME = "tic-tac-toe-v2";
+const TOURNAMENT_CONTRACT_NAME = "tic_tac_toe_tournament";
+const TIC_TAC_TOE_CONTRACT_NAME = "tic_tac_toe";
 
 // Cache for tournaments to reduce API calls
 const tournamentsCache = new Map<number, { tournament: Tournament; timestamp: number }>();
@@ -154,6 +154,26 @@ export async function startTournament(tournamentId: number) {
 }
 
 /**
+ * Advance the round of a tournament (creator only) - returns transaction options
+ */
+export async function advanceRound(tournamentId: number, round: number) {
+  // Pass tic-tac-toe contract as trait parameter
+  const gameContractPrincipal = contractPrincipalCV(
+    CONTRACT_ADDRESS,
+    TIC_TAC_TOE_CONTRACT_NAME
+  );
+
+  const txOptions = {
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: TOURNAMENT_CONTRACT_NAME,
+    functionName: "advance-round-if-complete",
+    functionArgs: [uintCV(tournamentId), uintCV(round), gameContractPrincipal],
+  };
+
+  return txOptions;
+}
+
+/**
  * Fetch tournament metadata (read-only)
  */
 export async function getTournament(
@@ -176,7 +196,7 @@ export async function getTournament(
     });
 
     const responseCV = tournamentCV as OptionalCV<TupleCV<TournamentCV>>;
-    
+
     if (responseCV.type === "none") return null;
     if (responseCV.value.type !== "tuple") return null;
 
@@ -201,7 +221,7 @@ export async function getTournament(
 
     // Update cache
     tournamentsCache.set(tournamentId, { tournament, timestamp: Date.now() });
-    
+
     return tournament;
   } catch (error) {
     console.error(`Error fetching tournament ${tournamentId}:`, error);
@@ -312,13 +332,13 @@ export async function getAllTournaments(): Promise<Tournament[]> {
     })) as UIntCV;
 
     const latestTournamentId = parseInt(latestIdCV.value.toString());
-    
+
     if (latestTournamentId === 0) {
       return [];
     }
 
     const tournaments: Tournament[] = [];
-    
+
     // Fetch all tournaments from 0 to latestTournamentId - 1
     for (let i = 0; i < latestTournamentId; i++) {
       const tournament = await getTournament(i);
@@ -330,7 +350,7 @@ export async function getAllTournaments(): Promise<Tournament[]> {
         await new Promise(resolve => setTimeout(resolve, 300));
       }
     }
-    
+
     return tournaments;
   } catch (error) {
     console.error("Error fetching all tournaments:", error);
@@ -355,7 +375,7 @@ export async function getTournamentPlayerCount(tournamentId: number): Promise<nu
     // Calculate player count from prize pool
     // prizePool = entryFee * playerCount
     const playerCount = Math.floor(tournament.prizePool / tournament.entryFee);
-    
+
     return playerCount;
   } catch (error) {
     console.error(`Error calculating player count for tournament ${tournamentId}:`, error);
