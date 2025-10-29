@@ -12,7 +12,7 @@ import {
 } from "@stacks/transactions";
 
 const CONTRACT_ADDRESS = "ST16XCPGV6CVM7D5M1H3BGT0VKDGNFKPRDSQXRW88";
-const CONTRACT_NAME = "tic-tac-toe-v2";
+const CONTRACT_NAME = "tic_tac_toe";
 
 type GameCV = {
   "player-one": PrincipalCV;
@@ -70,7 +70,7 @@ export async function getAllGames() {
     // Limit to last 10 games to avoid rate limiting
     const startId = Math.max(0, latestGameId - 10);
     const games: Game[] = [];
-    
+
     for (let i = startId; i < latestGameId; i++) {
       const game = await getGame(i);
       if (game) games.push(game);
