@@ -61,7 +61,7 @@ export default function CreateTournamentPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">Create Tournament</h1>
+        <h1 className="text-4xl font-bold text-gray-400 mb-8">Create Tournament</h1>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8 space-y-6">
           <div>
@@ -74,7 +74,7 @@ export default function CreateTournamentPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="e.g., Summer Championship 2025"
               required
             />
@@ -92,7 +92,7 @@ export default function CreateTournamentPage() {
               onChange={(e) => setEntryFee(e.target.value)}
               step="0.000001"
               min="0.000001"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -108,7 +108,7 @@ export default function CreateTournamentPage() {
               id="maxPlayers"
               value={maxPlayers}
               onChange={(e) => setMaxPlayers(parseInt(e.target.value) as 4 | 8 | 16 | 32)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value={4}>4 Players (2 rounds)</option>
               <option value={8}>8 Players (3 rounds)</option>

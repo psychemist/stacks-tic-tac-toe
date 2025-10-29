@@ -13,8 +13,8 @@ export default function TournamentsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-gray-800">Tournaments</h1>
-          <p className="text-gray-600 mt-2">Compete in single-elimination tournaments</p>
+          <h1 className="text-4xl font-bold text-gray-400">Tournaments</h1>
+          <p className="text-gray-500 mt-2">Compete in single-elimination tournaments</p>
         </div>
         
         {isConnected && (

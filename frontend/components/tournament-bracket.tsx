@@ -118,7 +118,7 @@ function PlayerSlot({ player, isWinner, label }: PlayerSlotProps) {
 
   return (
     <div
-      className={`rounded p-2 text-center text-xs font-mono ${
+      className={`rounded p-2 text-center text-xs text-gray-500 font-mono ${
         isWinner
           ? "bg-green-100 border-2 border-green-500 font-bold"
           : "bg-gray-50 border border-gray-200"

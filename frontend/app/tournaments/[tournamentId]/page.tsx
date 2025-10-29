@@ -105,8 +105,8 @@ export default function TournamentDetailPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2">{tournament.name}</h1>
-        <p className="text-gray-600 mb-8">{getStatusLabel(tournament.status)}</p>
+        <h1 className="text-4xl font-bold text-gray-400 mb-2">{tournament.name}</h1>
+        <p className="text-gray-500 mb-8">{getStatusLabel(tournament.status)}</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
@@ -136,18 +136,18 @@ export default function TournamentDetailPage() {
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Created by:</span>
-              <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+              <span className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                 {tournament.creator.slice(0, 12)}...{tournament.creator.slice(-8)}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Current Round:</span>
-              <span className="font-semibold">{tournament.currentRound || "Not started"}</span>
+              <span className="font-semibold text-gray-500">{tournament.currentRound || "Not started"}</span>
             </div>
             {tournament.winner && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Winner:</span>
-                <span className="font-mono text-xs bg-yellow-100 px-2 py-1 rounded">
+                <span className="font-mono text-xs text-gray-500 bg-yellow-100 px-2 py-1 rounded">
                   {tournament.winner.slice(0, 12)}...{tournament.winner.slice(-8)}
                 </span>
               </div>
